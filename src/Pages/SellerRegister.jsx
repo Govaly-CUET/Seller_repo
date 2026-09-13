@@ -24,44 +24,25 @@ const SellerRegister = () => {
 		setDocuments((current) => ({ ...current, [target.name]: target.files?.[0] || null }));
 	};
 
-	const uploadDocument = async (file, folder) => {
-		const data = new FormData();
-		data.append('file', file);
-		data.append('folder', folder);
-		const response = await axiosInstance.post('/api/v1/upload', data, {
-			headers: { 'Content-Type': 'multipart/form-data' },
-		});
-		return response.data.data.url;
-	};
-
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		setMessage({ type: '', text: '' });
 		setIsSubmitting(true);
 
 		try {
-			await axiosInstance.post('/api/v1/seller/auth/register', form);
-
-			if (documents.nid && documents.tradeLicense) {
-				setMessage({ type: 'success', text: 'Account created. Uploading verification documents...' });
-				const [nidDocument, tradeLicenseDocument] = await Promise.all([
-					uploadDocument(documents.nid, 'govaly/seller-documents/nid'),
-					uploadDocument(documents.tradeLicense, 'govaly/seller-documents/trade-license'),
-				]);
-				// The current API requires an approved seller token for this endpoint.
-				await axiosInstance.post('/api/v1/seller/verification/documents', { nidDocument, tradeLicenseDocument });
-			}
+			const data = new FormData();
+			Object.entries(form).forEach(([name, value]) => data.append(name, value));
+			data.append('nid', documents.nid);
+			data.append('tradeLicense', documents.tradeLicense);
+			await axiosInstance.post('/api/v1/seller/auth/register', data);
 
 			setMessage({ type: 'success', text: 'Registration submitted. Your account is pending admin approval.' });
 			setTimeout(() => navigate('/'), 1800);
 		} catch (error) {
 			const backendMessage = error.response?.data?.message;
-			const uploadBlocked = error.config?.url?.includes('/api/v1/upload') && [401, 403].includes(error.response?.status);
 			setMessage({
 				type: 'error',
-				text: uploadBlocked
-					? 'Seller created, but document upload is blocked by the backend. Change /api/v1/upload to accept a registration flow or upload documents after seller approval.'
-					: backendMessage || 'Unable to complete registration. Please try again.',
+				text: backendMessage || 'Unable to complete registration. Please try again.',
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -92,10 +73,10 @@ const SellerRegister = () => {
 						<div className="field-group field-full"><label htmlFor="address">Shop address *</label><textarea id="address" name="address" rows="3" placeholder="House, road, area, city" value={form.address} onChange={handleChange} required /></div>
 					</div>
 					<div className="document-section">
-						<div><h2>Verification documents <span>optional for now</span></h2><p>PDF, JPG, PNG, or WEBP up to 5MB each.</p></div>
+						<div><h2>Verification documents</h2><p>PDF, JPG, PNG, or WEBP up to 5MB each.</p></div>
 						<div className="document-grid">
-							<label className="file-field"><span>NID card</span><input name="nid" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} /><small>{documents.nid?.name || 'Choose file'}</small></label>
-							<label className="file-field"><span>Trade license</span><input name="tradeLicense" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} /><small>{documents.tradeLicense?.name || 'Choose file'}</small></label>
+							<label className="file-field"><span>NID card *</span><input name="nid" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} required /><small>{documents.nid?.name || 'Choose file'}</small></label>
+							<label className="file-field"><span>Trade license *</span><input name="tradeLicense" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} required /><small>{documents.tradeLicense?.name || 'Choose file'}</small></label>
 						</div>
 					</div>
 					<button className="auth-submit register-submit" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Submit application'}</button>
