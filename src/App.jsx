@@ -1,6 +1,9 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AddProduct from './pages/AddProduct';
+import SellerLogin from './Pages/SellerLogin';
+import SellerRegister from './Pages/SellerRegister';
 import './App.css';
 
 const Placeholder = ({ title }) => <h2>{title} — Coming soon</h2>;
@@ -8,8 +11,10 @@ const Placeholder = ({ title }) => <h2>{title} — Coming soon</h2>;
 function App() {
     return (
         <BrowserRouter>
-            <Layout>
-                <Routes>
+            <Routes>
+                <Route path="/" element={<SellerLogin />} />
+                <Route path="/register" element={<SellerRegister />} />
+                <Route path="*" element={<Layout><Routes>
                     <Route path="/dashboard" element={<Placeholder title="Dashboard" />} />
                     <Route path="/products" element={<Placeholder title="Products" />} />
                     <Route path="/products/add" element={<AddProduct />} />
@@ -17,9 +22,9 @@ function App() {
                     <Route path="/earnings" element={<Placeholder title="Earnings & Commission" />} />
                     <Route path="/reviews" element={<Placeholder title="Reviews & Ratings" />} />
                     <Route path="/profile" element={<Placeholder title="Profile" />} />
-                    <Route path="*" element={<AddProduct />} />
-                </Routes>
-            </Layout>
+                    <Route path="/addproduct" element={<AddProduct />} />
+                </Routes></Layout>} />
+            </Routes>
         </BrowserRouter>
     );
 }
