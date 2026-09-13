@@ -13,20 +13,57 @@ const AddProduct = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [previewUrl, setPreviewUrl] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        setMessage({ type: '', text: '' });
+
+        try {
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+            uploadData.append('folder', 'govaly/products');
+
+            const res = await axiosInstance.post('/api/v1/seller/upload', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+
+            const uploadedUrl = res.data.data.url;
+            setFormData((prev) => ({ ...prev, image: uploadedUrl }));
+            setPreviewUrl(uploadedUrl);
+        } catch (error) {
+            setMessage({
+                type: 'error',
+                text: error.response?.data?.message || 'Image upload failed.',
+            });
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.image) {
+            setMessage({ type: 'error', text: 'Please upload a product image first.' });
+            return;
+        }
+
         setLoading(true);
         setMessage({ type: '', text: '' });
 
         try {
-            const res = await axiosInstance.post('/seller/products', {
+            await axiosInstance.post('/seller/products', {
                 ...formData,
                 sale_price: Number(formData.sale_price),
                 stock: Number(formData.stock),
@@ -42,6 +79,7 @@ const AddProduct = () => {
                 stock: '',
                 status: 'in_stock',
             });
+            setPreviewUrl('');
         } catch (error) {
             setMessage({
                 type: 'error',
@@ -116,15 +154,17 @@ const AddProduct = () => {
                 </div>
 
                 <div className="form-row">
-                    <label>Image URL *</label>
+                    <label>Product Image *</label>
                     <input
-                        type="text"
-                        name="image"
-                        value={formData.image}
-                        onChange={handleChange}
-                        placeholder="https://..."
-                        required
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
                     />
+                    {uploading && <p className="upload-status">Uploading...</p>}
+                    {previewUrl && (
+                        <img src={previewUrl} alt="Preview" className="image-preview" />
+                    )}
                 </div>
 
                 <div className="form-row">
@@ -138,7 +178,7 @@ const AddProduct = () => {
                     />
                 </div>
 
-                <button type="submit" disabled={loading} className="submit-btn">
+                <button type="submit" disabled={loading || uploading} className="submit-btn">
                     {loading ? 'Publishing...' : 'Publish'}
                 </button>
             </form>
