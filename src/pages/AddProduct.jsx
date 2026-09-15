@@ -34,9 +34,7 @@ const AddProduct = () => {
             uploadData.append('file', file);
             uploadData.append('folder', 'govaly/products');
 
-            const res = await axiosInstance.post('/api/v1/seller/upload', uploadData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const res = await axiosInstance.post('/api/v1/upload', uploadData);
 
             const uploadedUrl = res.data.data.url;
             setFormData((prev) => ({ ...prev, image: uploadedUrl }));
