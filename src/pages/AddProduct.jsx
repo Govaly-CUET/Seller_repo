@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import "../assets/css/AddProduct.css";
+import './AddProduct.css';
 
 const TITLE_MAX = 255;
 
