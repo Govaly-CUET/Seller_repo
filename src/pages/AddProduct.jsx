@@ -1,189 +1,340 @@
-import { useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
+import "../assets/css/AddProduct.css";
 
-const AddProduct = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        category: '',
-        sale_price: '',
-        description: '',
-        image: '',
-        stock: '',
-        status: 'in_stock',
-    });
+const TITLE_MAX = 255;
 
-    const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
-    const [message, setMessage] = useState({ type: '', text: '' });
-    const [previewUrl, setPreviewUrl] = useState('');
+export default function AddProduct() {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState("");
+  const [stockStatus, setStockStatus] = useState("in_stock");
+  const [stockQuantity, setStockQuantity] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
+
+  const [categories, setCategories] = useState([]);
+  const [imageUrl, setImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (!localStorage.getItem("sellerToken")) {
+      navigate("/");
+      return;
+    }
+
+    const loadCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/api/v1/seller/categories");
+        setCategories(response.data?.data || []);
+      } catch (err) {
+        setError(err.response?.data?.message || "Unable to load categories.");
+      }
     };
 
-    const handleImageUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    loadCategories();
+  }, [navigate]);
 
-        setUploading(true);
-        setMessage({ type: '', text: '' });
+  const selectedCategory = categories.find((cat) => cat._id === category);
+  const subcategoryOptions = selectedCategory?.subcategory || [];
 
-        try {
-            const uploadData = new FormData();
-            uploadData.append('file', file);
-            uploadData.append('folder', 'govaly/products');
+  const handleCategoryChange = (value) => {
+    setCategory(value);
+    setSubcategory(""); // subcategory list changes with the category
+  };
 
-            const res = await axiosInstance.post('/api/v1/upload', uploadData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+  const handleImageClick = () => {
+    if (!isUploading) {
+      fileInputRef.current?.click();
+    }
+  };
 
-            const uploadedUrl = res.data.data.url;
-            setFormData((prev) => ({ ...prev, image: uploadedUrl }));
-            setPreviewUrl(uploadedUrl);
-        } catch (error) {
-            setMessage({
-                type: 'error',
-                text: error.response?.data?.message || 'Image upload failed.',
-            });
-        } finally {
-            setUploading(false);
-        }
-    };
+  const handleImageChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    setIsUploading(true);
+    setError("");
 
-        if (!formData.image) {
-            setMessage({ type: 'error', text: 'Please upload a product image first.' });
-            return;
-        }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "govaly/products");
 
-        setLoading(true);
-        setMessage({ type: '', text: '' });
+      const res = await axiosInstance.post("/api/v1/upload", formData);
+      setImageUrl(res.data.data.url);
+    } catch (err) {
+      setError(err.message || "Image upload failed.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
 
-        try {
-            await axiosInstance.post('/seller/products', {
-                ...formData,
-                sale_price: Number(formData.sale_price),
-                stock: Number(formData.stock),
-            });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-            setMessage({ type: 'success', text: 'Product added successfully!' });
-            setFormData({
-                name: '',
-                category: '',
-                sale_price: '',
-                description: '',
-                image: '',
-                stock: '',
-                status: 'in_stock',
-            });
-            setPreviewUrl('');
-        } catch (error) {
-            setMessage({
-                type: 'error',
-                text: error.response?.data?.message || 'Something went wrong.',
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (!localStorage.getItem("sellerToken")) {
+      navigate("/");
+      return;
+    }
 
-    return (
-        <div className="add-product-container">
-            <h1 className="add-product-title">Add Product</h1>
+    if (
+      !title.trim() ||
+      !price ||
+      !stockQuantity ||
+      !description.trim() ||
+      !imageUrl ||
+      !category
+    ) {
+      setError("Please fill in every required field and upload a product image.");
+      return;
+    }
 
-            {message.text && (
-                <div className={`form-message ${message.type}`}>{message.text}</div>
-            )}
+    setIsSaving(true);
 
-            <form onSubmit={handleSubmit} className="add-product-form">
-                <div className="form-row">
-                    <label>Product Name *</label>
+    try {
+      await axiosInstance.post("/seller/products", {
+        name: title.trim(),
+        category,
+        description: description.trim(),
+        image: imageUrl,
+        sale_price: Number(price),
+        stock: Number(stockQuantity),
+        status: stockStatus,
+      });
+
+      setSuccess("Product created successfully.");
+
+      setTitle("");
+      setPrice("");
+      setStockStatus("in_stock");
+      setStockQuantity("");
+      setDescription("");
+      setCategory("");
+      setSubcategory("");
+      setImageUrl("");
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Failed to create product.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="add-product-page">
+      <div className="admin-page-header">
+        <h1 className="admin-page-title">Add Product</h1>
+      </div>
+
+      {error && <p className="admin-error-text">{error}</p>}
+      {success && <p className="admin-success-text">{success}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="ap-grid">
+
+          {/* ---------- Main column ---------- */}
+          <div className="ap-main">
+
+            <div className="admin-card">
+              <label className="admin-field-label" htmlFor="ap-title">
+                Product Title <span className="ap-required">*</span>
+              </label>
+              <div className="ap-input-counter">
+                <input
+                  id="ap-title"
+                  type="text"
+                  className="admin-input"
+                  maxLength={TITLE_MAX}
+                  placeholder="Enter product title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <span className="ap-counter">{title.length}/{TITLE_MAX}</span>
+              </div>
+            </div>
+
+            <div className="admin-card">
+              <h3 className="ap-section-title">Simple</h3>
+
+              <div className="admin-form-row">
+                <label className="admin-field-label">
+                  Price <span className="ap-required">*</span>
+                </label>
+                <input
+                  type="number"
+                  className="admin-input"
+                  min="0"
+                  placeholder="0.00"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
+              </div>
+
+              <div className="admin-form-row">
+                <label className="admin-field-label">
+                  Stock Status <span className="ap-required">*</span>
+                </label>
+                <div className="ap-radio-group">
+                  <label className="ap-radio">
                     <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
+                      type="radio"
+                      name="stockStatus"
+                      checked={stockStatus === "in_stock"}
+                      onChange={() => setStockStatus("in_stock")}
                     />
-                </div>
-
-                <div className="form-row">
-                    <label>Category ID *</label>
+                    In stock
+                  </label>
+                  <label className="ap-radio">
                     <input
-                        type="text"
-                        name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        placeholder="Category ObjectId"
-                        required
+                      type="radio"
+                      name="stockStatus"
+                      checked={stockStatus === "out_of_stock"}
+                      onChange={() => setStockStatus("out_of_stock")}
                     />
+                    Out of stock
+                  </label>
                 </div>
+              </div>
 
-                <div className="form-row two-col">
-                    <div>
-                        <label>Price (৳) *</label>
-                        <input
-                            type="number"
-                            name="sale_price"
-                            value={formData.sale_price}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Stock Quantity *</label>
-                        <input
-                            type="number"
-                            name="stock"
-                            value={formData.stock}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                </div>
+              <div className="admin-form-row">
+                <label className="admin-field-label" htmlFor="ap-stock-qty">
+                  Available in Stock <span className="ap-required">*</span>
+                </label>
+                <input
+                  id="ap-stock-qty"
+                  type="number"
+                  className="admin-input"
+                  min="0"
+                  placeholder="0"
+                  value={stockQuantity}
+                  onChange={(e) => setStockQuantity(e.target.value)}
+                />
+              </div>
+            </div>
 
-                <div className="form-row">
-                    <label>Availability Status</label>
-                    <select name="status" value={formData.status} onChange={handleChange}>
-                        <option value="in_stock">In Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                </div>
+            <div className="admin-card">
+              <label className="admin-field-label" htmlFor="ap-description">
+                Product Description <span className="ap-required">*</span>
+              </label>
+              <textarea
+                id="ap-description"
+                className="admin-input ap-textarea"
+                rows={10}
+                placeholder="Describe the product..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
 
-                <div className="form-row">
-                    <label>Product Image *</label>
-                    <input
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        onChange={handleImageUpload}
-                        disabled={uploading}
-                    />
-                    {uploading && <p className="upload-status">Uploading...</p>}
-                    {previewUrl && (
-                        <img src={previewUrl} alt="Preview" className="image-preview" />
-                    )}
-                </div>
+          </div>
 
-                <div className="form-row">
-                    <label>Description *</label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        rows={5}
-                        required
-                    />
-                </div>
+          {/* ---------- Side column ---------- */}
+          <div className="ap-side">
 
-                <button type="submit" disabled={loading || uploading} className="submit-btn">
-                    {loading ? 'Publishing...' : 'Publish'}
+            <div className="admin-card">
+              <label className="admin-field-label">
+                Product Image <span className="ap-required">*</span>
+              </label>
+
+              <div className="ap-image-upload">
+                <button
+                  type="button"
+                  className="ap-image-box"
+                  onClick={handleImageClick}
+                  disabled={isUploading}
+                >
+                  {imageUrl ? (
+                    <img src={imageUrl} alt="Product" />
+                  ) : (
+                    <span className="ap-image-plus">+</span>
+                  )}
                 </button>
-            </form>
-        </div>
-    );
-};
 
-export default AddProduct;
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-secondary"
+                  onClick={handleImageClick}
+                  disabled={isUploading}
+                >
+                  {isUploading ? "Uploading..." : "Upload Media"}
+                </button>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  className="ap-file-input"
+                  onChange={handleImageChange}
+                  disabled={isUploading}
+                />
+              </div>
+            </div>
+
+            <div className="admin-card">
+              <label className="admin-field-label" htmlFor="ap-category">
+                Select Category <span className="ap-required">*</span>
+              </label>
+              <select
+                id="ap-category"
+                className="admin-select"
+                value={category}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="admin-card">
+              <label className="admin-field-label" htmlFor="ap-subcategory">
+                Select Subcategory <span className="ap-required">*</span>
+              </label>
+              <select
+                id="ap-subcategory"
+                className="admin-select"
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                disabled={!category}
+              >
+                <option value="">
+                  {category ? "Select subcategory" : "Select a category first"}
+                </option>
+                {subcategoryOptions.map((sub) => (
+                  <option key={sub._id} value={sub._id}>
+                    {sub.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="admin-btn admin-btn-primary ap-save-btn"
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </button>
+
+          </div>
+
+        </div>
+      </form>
+    </div>
+  );
+}

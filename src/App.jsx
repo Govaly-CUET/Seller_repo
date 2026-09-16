@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import AddProduct from './pages/AddProduct';
-import SellerLogin from './Pages/SellerLogin';
-import SellerRegister from './Pages/SellerRegister';
+import SellerLogin from './pages/SellerLogin';
+import SellerRegister from './pages/SellerRegister';
 import './App.css';
 
 const Placeholder = ({ title }) => <h2>{title} — Coming soon</h2>;
