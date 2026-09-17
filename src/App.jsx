@@ -8,6 +8,7 @@ import SellerRegister from './Pages/SellerRegister';
 import Profile from './Pages/Profile';
 import Dashboard from './Pages/Dashboard';
 import Earnings from './Pages/Earnings';
+import Reviews from './Pages/Reviews';
 import './App.css';
 import './Pages/Products.css';
 import './Pages/AddProduct.css';
@@ -23,6 +24,7 @@ function App() {
                     <Route path="/products" element={<Products />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/earnings" element={<Earnings />} />
+                    <Route path="/reviews" element={<Reviews />} />
                 </Routes></Layout>} />
             </Routes>
         </BrowserRouter>
