@@ -1,15 +1,16 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import AddProduct from './pages/AddProduct';
-import Products from './pages/Products';
-import SellerLogin from './pages/SellerLogin';
-import SellerRegister from './pages/SellerRegister';
+import AddProduct from './Pages/AddProduct';
+import Products from './Pages/Products';
+import SellerLogin from './Pages/SellerLogin';
+import SellerRegister from './Pages/SellerRegister';
+import Profile from './Pages/Profile';
+import Dashboard from './Pages/Dashboard';
+import Earnings from './Pages/Earnings';
 import './App.css';
-import './pages/Products.css';
-import './pages/AddProduct.css';
-
-const Placeholder = ({ title }) => <h2>{title} — Coming soon</h2>;
+import './Pages/Products.css';
+import './Pages/AddProduct.css';
 
 function App() {
     return (
@@ -18,13 +19,13 @@ function App() {
                 <Route path="/" element={<SellerLogin />} />
                 <Route path="/register" element={<SellerRegister />} />
                 <Route path="*" element={<Layout><Routes>
-                    <Route path="/dashboard" element={<Placeholder title="Dashboard" />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/products/add" element={<AddProduct />} />
-                    <Route path="/orders" element={<Placeholder title="Orders" />} />
-                    <Route path="/earnings" element={<Placeholder title="Earnings & Commission" />} />
-                    <Route path="/reviews" element={<Placeholder title="Reviews & Ratings" />} />
-                    <Route path="/profile" element={<Placeholder title="Profile" />} />
+                    <Route path="/orders" element={<h2>Orders — Coming soon</h2>} />
+                   <Route path="/earnings" element={<Earnings />} />
+                    <Route path="/reviews" element={<h2>Reviews & Ratings — Coming soon</h2>} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="/addproduct" element={<AddProduct />} />
                 </Routes></Layout>} />
             </Routes>
