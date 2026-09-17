@@ -21,12 +21,8 @@ function App() {
                 <Route path="*" element={<Layout><Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/products" element={<Products />} />
-                    <Route path="/products/add" element={<AddProduct />} />
-                    <Route path="/orders" element={<h2>Orders — Coming soon</h2>} />
-                   <Route path="/earnings" element={<Earnings />} />
-                    <Route path="/reviews" element={<h2>Reviews & Ratings — Coming soon</h2>} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/addproduct" element={<AddProduct />} />
+                    <Route path="/earnings" element={<Earnings />} />
                 </Routes></Layout>} />
             </Routes>
         </BrowserRouter>
