@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const menuItems = [
     { label: 'Dashboard', path: '/dashboard' },
@@ -11,6 +11,14 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('sellerToken');
+        localStorage.removeItem('sellerProfile');
+        navigate('/');
+    };
+
     return (
         <aside className="sidebar">
             <div className="sidebar-logo">Shop</div>
@@ -29,7 +37,9 @@ const Sidebar = () => {
                 ))}
             </nav>
             <div className="sidebar-footer">
-                <button className="logout-btn">Logout</button>
+                <button className="logout-btn" onClick={handleLogout}>
+                    Logout
+                </button>
             </div>
         </aside>
     );
