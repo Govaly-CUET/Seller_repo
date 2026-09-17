@@ -24,25 +24,64 @@ const SellerRegister = () => {
 		setDocuments((current) => ({ ...current, [target.name]: target.files?.[0] || null }));
 	};
 
+	// Uploads through the same shared endpoint admin uploads use, so
+	// each document also lands in the Media collection, attributed to
+	// this seller — not a special-cased upload of its own.
+	const uploadDocument = async (file, folder) => {
+		const data = new FormData();
+		data.append('file', file);
+		data.append('folder', folder);
+		const response = await axiosInstance.post('/api/v1/upload', data, {
+			headers: { 'Content-Type': 'multipart/form-data' },
+		});
+		return response.data.data.url;
+	};
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		setMessage({ type: '', text: '' });
 		setIsSubmitting(true);
 
 		try {
-			const data = new FormData();
-			Object.entries(form).forEach(([name, value]) => data.append(name, value));
-			data.append('nid', documents.nid);
-			data.append('tradeLicense', documents.tradeLicense);
-			await axiosInstance.post('/api/v1/seller/auth/register', data);
+			// Step 1 — create the account. No files here: the backend
+			// returns a pending-status token good only for finishing
+			// onboarding (uploading + submitting documents below), not
+			// for logging into the dashboard.
+			const registerResponse = await axiosInstance.post('/api/v1/seller/auth/register', form);
+			const { token } = registerResponse.data;
+
+			if (!token) {
+				throw new Error('Registration succeeded but no token was returned.');
+			}
+
+			localStorage.setItem('sellerToken', token);
+
+			// Step 2 — upload NID + trade license, then submit them.
+			setMessage({ type: 'success', text: 'Account created. Uploading verification documents...' });
+
+			const [nidDocument, tradeLicenseDocument] = await Promise.all([
+				uploadDocument(documents.nid, 'govaly/sellers/nid'),
+				uploadDocument(documents.tradeLicense, 'govaly/sellers/trade-license'),
+			]);
+
+			await axiosInstance.post('/api/v1/seller/verification/documents', {
+				nidDocument,
+				tradeLicenseDocument,
+			});
+
+			// The account is pending review — this onboarding token can't
+			// log into the dashboard (authenticateSeller refuses pending
+			// sellers a session token), so clear it and send them to login.
+			localStorage.removeItem('sellerToken');
 
 			setMessage({ type: 'success', text: 'Registration submitted. Your account is pending admin approval.' });
 			setTimeout(() => navigate('/'), 1800);
 		} catch (error) {
+			localStorage.removeItem('sellerToken');
 			const backendMessage = error.response?.data?.message;
 			setMessage({
 				type: 'error',
-				text: backendMessage || 'Unable to complete registration. Please try again.',
+				text: backendMessage || error.message || 'Unable to complete registration. Please try again.',
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -73,7 +112,7 @@ const SellerRegister = () => {
 						<div className="field-group field-full"><label htmlFor="address">Shop address *</label><textarea id="address" name="address" rows="3" placeholder="House, road, area, city" value={form.address} onChange={handleChange} required /></div>
 					</div>
 					<div className="document-section">
-						<div><h2>Verification documents</h2><p>PDF, JPG, PNG, or WEBP up to 5MB each.</p></div>
+						<div><h2>Verification documents *</h2><p>PDF, JPG, PNG, or WEBP up to 5MB each. Uploaded right after your account is created.</p></div>
 						<div className="document-grid">
 							<label className="file-field"><span>NID card *</span><input name="nid" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} required /><small>{documents.nid?.name || 'Choose file'}</small></label>
 							<label className="file-field"><span>Trade license *</span><input name="tradeLicense" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={handleFileChange} required /><small>{documents.tradeLicense?.name || 'Choose file'}</small></label>
