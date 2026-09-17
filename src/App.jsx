@@ -9,6 +9,7 @@ import Profile from './Pages/Profile';
 import Dashboard from './Pages/Dashboard';
 import Earnings from './Pages/Earnings';
 import Orders from './Pages/Orders';
+import Reviews from './Pages/Reviews';
 import './App.css';
 import './Pages/Products.css';
 import './Pages/AddProduct.css';
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/reviews" element={<h2>Reviews & Ratings — Coming soon</h2>} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/earnings" element={<Earnings />} />
+                    <Route path="/reviews" element={<Reviews />} />
                 </Routes></Layout>} />
             </Routes>
         </BrowserRouter>
