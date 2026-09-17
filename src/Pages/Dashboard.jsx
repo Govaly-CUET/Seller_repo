@@ -19,16 +19,17 @@ const Dashboard = () => {
         fetchStats();
     }, []);
 
-    const fetchStats = async () => {
-        try {
-            const res = await axiosInstance.get('/api/v1/seller/dashboard/stats');
-            setStats(res.data.data);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to load dashboard stats.');
-        } finally {
-            setLoading(false);
-        }
-    };
+ const fetchStats = async () => {
+    try {
+        const res = await axiosInstance.get('/api/v1/seller/dashboard/stats');
+        console.log('Backend Data:', res.data.data); // Check property names here
+        setStats(res.data.data);
+    } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load dashboard stats.');
+    } finally {
+        setLoading(false);
+    }
+};
 
     if (loading) {
         return <div className="add-product-container">Loading dashboard...</div>;
