@@ -537,3 +537,137 @@ body {
   color: #9ca3af;
   padding: 32px !important;
 }
+.profile-container {
+  max-width: 640px;
+}
+
+.profile-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.profile-header-row .add-product-title {
+  margin-bottom: 0;
+}
+
+.edit-btn {
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid #111827;
+  color: #111827;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.edit-btn:hover {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.profile-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eceef1;
+}
+
+.profile-avatar-wrap {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #111827;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-edit-btn:hover {
+  background: #000000;
+}
+
+.profile-identity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-shop-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.profile-shop-slug {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.profile-form {
+  gap: 20px;
+}
+
+.profile-static-value {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  min-height: 20px;
+}
+
+.profile-action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.profile-action-row .submit-btn {
+  flex: 1;
+  margin-top: 0;
+}
+
+.cancel-btn {
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid #d9dce1;
+  color: #374151;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #f3f4f6;
+}
