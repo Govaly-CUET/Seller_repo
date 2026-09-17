@@ -28,7 +28,7 @@ function App() {
                    <Route path="/earnings" element={<Earnings />} />
                     <Route path="/reviews" element={<h2>Reviews & Ratings — Coming soon</h2>} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/addproduct" element={<AddProduct />} />
+                    <Route path="/earnings" element={<Earnings />} />
                 </Routes></Layout>} />
             </Routes>
         </BrowserRouter>
