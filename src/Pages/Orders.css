@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/Pages/Orders.css
 .orders-page { max-width: 1400px; }
 .orders-page-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .orders-page-header h1 { margin: 0 0 8px; font-size: 28px; color: #111827; }
@@ -31,3 +32,85 @@
     .orders-toolbar { align-items: stretch; flex-direction: column; }
     .orders-toolbar input { min-width: 0; }
 }
+=======
+.orders-page {
+    padding: 32px;
+}
+
+.orders-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.orders-page-header h1 {
+    margin: 0;
+}
+
+.orders-page-header p,
+.orders-message {
+    color: #667085;
+}
+
+.orders-message.error {
+    color: #b42318;
+}
+
+.orders-table-wrap {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #eaecf0;
+    border-radius: 8px;
+}
+
+.orders-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f2f4f7;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.orders-table th {
+    background: #f9fafb;
+    color: #475467;
+    font-size: 13px;
+}
+
+.orders-empty {
+    padding: 32px !important;
+    text-align: center !important;
+    color: #667085;
+}
+
+.order-status {
+    min-width: 125px;
+    padding: 7px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.order-status.delivered {
+    border-color: #12b76a;
+    color: #067647;
+}
+
+.order-status.canceled {
+    border-color: #f04438;
+    color: #b42318;
+}
+
+@media (max-width: 640px) {
+    .orders-page {
+        padding: 20px 16px;
+    }
+}
+>>>>>>> dev:src/pages/Orders.css
