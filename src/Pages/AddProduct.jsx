@@ -96,7 +96,8 @@ export default function AddProduct() {
       !stockQuantity ||
       !description.trim() ||
       !imageUrl ||
-      !category
+      !category ||
+      !subcategory
     ) {
       setError("Please fill in every required field and upload a product image.");
       return;
@@ -108,6 +109,7 @@ export default function AddProduct() {
       await axiosInstance.post("/seller/products", {
         name: title.trim(),
         category,
+        subcategory,
         description: description.trim(),
         image: imageUrl,
         sale_price: Number(price),
