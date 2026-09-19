@@ -108,6 +108,7 @@ export default function AddProduct() {
       await axiosInstance.post("/seller/products", {
         name: title.trim(),
         category,
+        subcategory,
         description: description.trim(),
         image: imageUrl,
         sale_price: Number(price),
