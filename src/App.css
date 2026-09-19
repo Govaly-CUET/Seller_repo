@@ -427,6 +427,8 @@ body {
 .auth-submit { border: 0; background: #db0a68; color: #fff; border-radius: 3px; padding: 13px 18px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.2s; }
 .auth-submit:hover { background: #b80857; transform: translateY(-1px); }
 .auth-submit:disabled { opacity: 0.65; cursor: wait; transform: none; }
+.auth-link-button { border: 0; padding: 2px; background: transparent; color: #c9085f; font: inherit; font-size: 13px; cursor: pointer; }
+.auth-link-button:hover { text-decoration: underline; }
 .auth-footer { text-align: center; color: #807880; font-size: 13px; margin-top: 26px; }
 .auth-footer a, .register-header a { color: #c9085f; font-weight: 700; }
 .register-page { min-height: 100svh; background: #f2f0ee; padding-bottom: 56px; }
