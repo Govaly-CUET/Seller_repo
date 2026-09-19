@@ -14,6 +14,7 @@ const Reviews = () => {
         try {
             const res = await axiosInstance.get('/api/v1/seller/reviews');
             setReviews(res.data.data);
+            console.log('Fetched Reviews:', res.data.data); // Log the fetched reviews for debugging
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to load reviews.');
         } finally {
