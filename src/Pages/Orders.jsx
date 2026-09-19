@@ -1,4 +1,3 @@
-<<<<<<< HEAD:src/Pages/Orders.jsx
 import { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 
@@ -39,32 +38,12 @@ const Orders = () => {
             if (search.trim()) params.set('search', search.trim());
             const query = params.toString() ? `?${params.toString()}` : '';
             const response = await axiosInstance.get(`/api/v1/seller/orders${query}`);
-=======
-import { useEffect, useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
-
-const formatDate = (value) => {
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
-};
-
-const Orders = () => {
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    const loadOrders = async () => {
-        try {
-            setError('');
-            const response = await axiosInstance.get('/api/v1/seller/orders');
->>>>>>> dev:src/pages/Orders.jsx
             setOrders(response.data?.data || []);
         } catch (requestError) {
             setError(requestError.response?.data?.message || 'Unable to load orders.');
         } finally {
             setLoading(false);
         }
-<<<<<<< HEAD:src/Pages/Orders.jsx
     }, [search, status]);
 
     useEffect(() => {
@@ -88,20 +67,12 @@ const Orders = () => {
             setUpdatingId('');
         }
     };
-=======
-    };
-
-    useEffect(() => {
-        loadOrders();
-    }, []);
->>>>>>> dev:src/pages/Orders.jsx
 
     return (
         <section className="orders-page">
             <div className="orders-page-header">
                 <div>
                     <h1>Orders</h1>
-<<<<<<< HEAD:src/Pages/Orders.jsx
                     <p>Review customer details and move each order through fulfillment.</p>
                 </div>
                 <span className="orders-count">{orders.length} order{orders.length === 1 ? '' : 's'}</span>
@@ -119,46 +90,30 @@ const Orders = () => {
                     onKeyDown={(event) => event.key === 'Enter' && loadOrders()}
                 />
                 <button type="button" onClick={loadOrders}>Refresh</button>
-=======
-                    <p>{orders.length} order{orders.length === 1 ? '' : 's'}</p>
-                </div>
->>>>>>> dev:src/pages/Orders.jsx
             </div>
 
             {error && <p className="orders-message error">{error}</p>}
             {loading && <p className="orders-message">Loading orders...</p>}
 
-<<<<<<< HEAD:src/Pages/Orders.jsx
             {!loading && !error && orders.length === 0 && (
                 <p className="orders-message">No orders found.</p>
             )}
 
             {!loading && orders.length > 0 && (
-=======
-            {!loading && !error && (
->>>>>>> dev:src/pages/Orders.jsx
                 <div className="orders-table-wrap">
                     <table className="orders-table">
                         <thead>
                             <tr>
                                 <th>Order</th>
-<<<<<<< HEAD:src/Pages/Orders.jsx
                                 <th>Placed</th>
                                 <th>Customer</th>
                                 <th>Delivery address</th>
                                 <th>Items</th>
                                 <th>Total</th>
-=======
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Products</th>
-                                <th>Amount</th>
->>>>>>> dev:src/pages/Orders.jsx
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-<<<<<<< HEAD:src/Pages/Orders.jsx
                             {orders.map((order) => (
                                 <tr key={order._id}>
                                     <td className="orders-code">{order.orderCode}</td>
@@ -190,21 +145,6 @@ const Orders = () => {
                                                 <option key={item.value} value={item.value}>{item.label}</option>
                                             ))}
                                         </select> */}
-=======
-                            {orders.length === 0 ? (
-                                <tr><td colSpan="6" className="orders-empty">No orders found.</td></tr>
-                            ) : orders.map((order) => (
-                                <tr key={order._id}>
-                                    <td>{order.orderCode}</td>
-                                    <td>{formatDate(order.createdAt)}</td>
-                                    <td>{order.customer?.name || order.shippingAddress?.name || '-'}</td>
-                                    <td>{order.items?.map((item) => `${item.productName} x ${item.quantity}`).join(', ') || '-'}</td>
-                                    <td>৳ {Number(order.amount || 0).toLocaleString()}</td>
-                                    <td>
-                                        <span className={`order-status ${order.financialStatus}`}>
-                                            {order.financialStatus?.replace('_', ' ') || '-'}
-                                        </span>
->>>>>>> dev:src/pages/Orders.jsx
                                     </td>
                                 </tr>
                             ))}
@@ -216,8 +156,4 @@ const Orders = () => {
     );
 };
 
-<<<<<<< HEAD:src/Pages/Orders.jsx
 export default Orders;
-=======
-export default Orders;
->>>>>>> dev:src/pages/Orders.jsx
