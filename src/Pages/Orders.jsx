@@ -120,8 +120,7 @@ const Orders = () => {
     };
 
     const stageLocked = (order) => (
-        ['delivered', 'canceled'].includes(order.financialStatus)
-        || order.shipment?.status === 'cancelled'
+        ['delivered', 'cancelled'].includes(order.shipment?.status)
         || order.shipment?.status === 'pending'
         || order.shipment?.sellerStatus === 'handed_over'
     );
@@ -236,7 +235,7 @@ const Orders = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        {order.financialStatus !== 'delivered' ? (
+                                        {order.shipment?.status !== 'delivered' ? (
                                             <span className="orders-muted">Not delivered yet</span>
                                         ) : (
                                             <>
