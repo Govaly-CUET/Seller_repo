@@ -20,6 +20,7 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<SellerLogin />} />
+                <Route path="/login" element={<SellerLogin />} />
                 <Route path="/register" element={<SellerRegister />} />
                 <Route path="*" element={<Layout><Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
